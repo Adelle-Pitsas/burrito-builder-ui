@@ -22,6 +22,7 @@ describe('the Burrito Builder home page', () => {
         cy.get('li').eq(3).should('contain', 'queso fresco')
         cy.get('li').eq(4).should('contain', 'jalapeno')
       })
+      cy.get('.remove-button').should('contain', '🗑')
     })
     cy.get('.order').eq(1).within(() => {
       cy.get('h3').should('contain', 'Sam')
@@ -34,6 +35,7 @@ describe('the Burrito Builder home page', () => {
         cy.get('li').eq(4).should('contain', 'queso fresco')
         cy.get('li').eq(5).should('contain', 'jalapeno')
       })
+      cy.get('.remove-button').should('contain', '🗑')
     })
     cy.get('.order').eq(2).within(() => {
       cy.get('h3').should('contain', 'Alex')
@@ -45,6 +47,7 @@ describe('the Burrito Builder home page', () => {
         cy.get('li').eq(3).should('contain', 'carnitas')
         cy.get('li').eq(4).should('contain', 'queso fresco')
       })
+      cy.get('.remove-button').should('contain', '🗑')
     })
   })
 
@@ -92,6 +95,7 @@ describe('the Burrito Builder home page', () => {
         cy.get('li').eq(1).should('contain', 'lettuce')
         cy.get('li').eq(2).should('contain', 'pico de gallo')
       })
+      cy.get('.remove-button').should('contain', '🗑')
     })
   })
 
@@ -111,4 +115,42 @@ describe('the Burrito Builder home page', () => {
     cy.get('.order').should('have.length', '3')
   })
 
+
+  it('should allow the user to delete an order', () => {
+    cy.intercept('DELETE', 'http://localhost:3001/api/v1/orders/3')
+    cy.intercept('http://localhost:3001/api/v1/orders', {
+      method: 'GET',
+      fixture: '../fixtures/filteredOrders.json'
+    })
+     cy.get('.order').eq(2).within(() => {
+      cy.get('.remove-button').click()
+    })
+    cy.get('.order').should('have.length', '2')
+    cy.get('.order').eq(2).should('not.exist')
+    cy.get('.order').eq(0).within(() => {
+      cy.get('h3').should('contain', 'Pat')
+      cy.get('ul').within(() => {
+        cy.get('li').should('have.length', '5')
+        cy.get('li').eq(0).should('contain', 'beans')
+        cy.get('li').eq(1).should('contain', 'lettuce')
+        cy.get('li').eq(2).should('contain', 'carnitas')
+        cy.get('li').eq(3).should('contain', 'queso fresco')
+        cy.get('li').eq(4).should('contain', 'jalapeno')
+      })
+      cy.get('.remove-button').should('contain', '🗑')
+    })
+    cy.get('.order').eq(1).within(() => {
+      cy.get('h3').should('contain', 'Sam')
+      cy.get('ul').within(() => {
+        cy.get('li').should('have.length', '6')
+        cy.get('li').eq(0).should('contain', 'steak')
+        cy.get('li').eq(1).should('contain', 'pico de gallo')
+        cy.get('li').eq(2).should('contain', 'lettuce')
+        cy.get('li').eq(3).should('contain', 'carnitas')
+        cy.get('li').eq(4).should('contain', 'queso fresco')
+        cy.get('li').eq(5).should('contain', 'jalapeno')
+      })
+      cy.get('.remove-button').should('contain', '🗑')
+    })
+  })
 })
